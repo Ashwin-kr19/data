@@ -1,0 +1,587 @@
+﻿Graph layouts
+
+
+G=nx.from_numpy_array(Adj_mat)
+plt.figure(figsize=(3,3))
+nx.draw(G, node_size=50, node_color=node_clr, edge_color='gray', with_labels=False)
+plt.show()
+
+
+Spectral
+
+
+# Spectral layout
+
+
+pos = nx.spectral_layout(G_dolphins)
+nx.draw(G_dolphins, pos, with_labels=True, node_size=100, node_color='lightblue', edge_color='gray')
+plt.figure(6,figsize=(20,20))
+plt.show()
+
+
+P and Q
+
+
+G=draw_graph(N,p,q)
+plt.figure(figsize=(3,3))
+nx.draw(G, node_size=50, node_color=node_clr, edge_color='gray', with_labels=False)
+plt.title("p="+str(p)+", q="+str(q))
+plt.show()
+
+
+q=0
+
+
+from re import A
+import numpy as np
+
+
+Adj_mat0=np.zeros((2*N,2*N))
+p=random.random()
+q=0
+
+
+for i in range(2*N):
+ for j in range(i+1,2*N):
+   if node_clr[i]==node_clr[j]:
+     if random.random()<=p:
+       Adj_mat0[i][j]=1
+   else:
+     if random.random()<=q:
+       Adj_mat0[i][j]=1
+
+
+for i in range(2*N):
+ for j in range(i):
+   Adj_mat0[i][j]=Adj_mat0[j][i]
+
+
+#print(Adj_mat)
+G0=nx.from_numpy_array(Adj_mat0)
+plt.figure(figsize=(3,3))
+nx.draw(G0, node_size=50, node_color=node_clr, edge_color='gray', with_labels=False)
+plt.show()
+
+
+
+
+ER - n,p
+
+
+import networkx as nx
+import matplotlib.pyplot as plt
+
+
+# Function to generate and visualize an Erdős-Rényi network
+def generate_erdos_renyi(N, avg_degree, title):
+   # Calculate the linking probability p
+   p = avg_degree / (N - 1)
+
+
+   # Generate the Erdős-Rényi network
+   G = nx.erdos_renyi_graph(N, p)
+
+
+   # Draw the network
+   plt.figure(figsize=(6, 6))
+   nx.draw(G, node_size=20, node_color='blue', edge_color='gray', with_labels=False)
+   plt.title(title)
+   plt.show()
+
+
+# Parameters
+N = 500  # Number of nodes
+
+
+# (a) Average degree 〈k〉 = 0.8
+generate_erdos_renyi(N, avg_degree=0, title="Erdős-Rényi Network (N=500, <k>=0)")
+
+
+
+
+# (a) Average degree 〈k〉 = 0.8
+generate_erdos_renyi(N, avg_degree=0.8, title="Erdős-Rényi Network (N=500, <k>=0.8)")
+
+
+# (b) Average degree 〈k〉 = 1
+generate_erdos_renyi(N, avg_degree=1, title="Erdős-Rényi Network (N=500, <k>=1)")
+
+
+# (c) Average degree 〈k〉 = 8
+generate_erdos_renyi(N, avg_degree=8, title="Erdős-Rényi Network (N=500, <k>=8)")
+
+
+
+
+
+
+Rndom graph - n,p,q
+Calculating average degrees
+
+
+def calculate_degrees(N, p, q):
+   k_blue_avg = p * (N - 1)
+   k_full_avg = p * (N - 1) + q * N
+   return k_blue_avg, k_full_avg
+
+
+N = 1000  # Example value
+p = 0.01  # Example value
+q = 0.005  # Example value
+
+
+k_blue_avg, k_full_avg = calculate_degrees(N, p, q)
+print(f"Average degree of blue subnetwork: {k_blue_avg:.2f}")
+print(f"Average degree of full network: {k_full_avg:.2f}")
+
+
+Minimal p and q for one component:
+
+
+import math
+
+
+def minimal_probabilities(N):
+   p_min = math.log(N) / N
+   q_min = math.log(2*N) / (2*N)
+   return p_min, q_min
+
+
+p_min, q_min = minimal_probabilities(N)
+print(f"Minimal p: {p_min:.4f}")
+print(f"Minimal q: {q_min:.4f}")
+
+
+
+
+Small world property
+
+
+p=0.9
+q=0.01
+N=200
+G=draw_graph(N,p,q)
+
+
+avg_cluster=nx.average_clustering(G)
+print("Average clustering coefficient: ",avg_cluster)
+
+
+if nx.is_connected(G):
+ avg_shortest_path=nx.average_shortest_path_length(G)
+ print("Average shortest path length: ",avg_shortest_path)
+else:
+ print("Network is not connected")
+Random graph - n,p,q,f
+
+
+def draw_graph(N,p,q,f):
+ node_clr=['blue']*N + ['red']*N
+ purple_nodes=random.sample(range(2*N),int(f*2*N))
+ for i in purple_nodes:
+   node_clr[i]='purple'
+ random.shuffle(node_clr)
+
+
+ Adj_mat=np.zeros((2*N,2*N))
+ for i in range(2*N):
+   for j in range(i+1,2*N):
+     if (node_clr[i]=='blue' and node_clr[j]=='blue') or (node_clr[i]=='red' and node_clr[j]=='red'):
+       if random.random()<=p:
+         Adj_mat[i][j]=1
+     elif node_clr[i]=='purple' and (node_clr[j]=='red' or node_clr[j]=='blue'):
+       if random.random()<=p:
+         Adj_mat[i][j]=1
+
+
+ for i in range(2*N):
+   for j in range(i):
+     Adj_mat[i][j]=Adj_mat[j][i]
+
+
+ G=nx.from_numpy_array(Adj_mat)
+ plt.figure(figsize=(6,6))
+ nx.draw(G, node_size=50, node_color=node_clr, edge_color='gray', with_labels=False)
+ plt.title("p="+str(p)+", q="+str(q))
+ plt.show()
+
+
+ return G,node_clr
+
+
+N=25
+p=0.5
+q=0
+f=0.1
+G,node_clr=draw_graph(N,p,q,f)
+
+
+
+
+Pa2
+
+
+Power law
+
+
+import networkx as nx
+import numpy
+
+
+def generate_network(N, gamma):
+   degree_distribution = np.random.zipf(gamma, N)
+   if sum(degree_distribution) % 2 != 0:
+       degree_distribution[np.argmax(degree_distribution)] -= 1
+
+
+   G = nx.configuration_model(degree_distribution)
+   G_simple = nx.Graph(G)
+   G_simple.remove_edges_from(nx.selfloop_edges(G_simple))
+
+
+   return G, G_simple
+
+
+def calculate_percentage(G, G_simple):
+   num_edges = G.number_of_edges()
+   num_multi_links = num_edges - G_simple.number_of_edges()
+
+
+   num_self_loop = sum(1 for u,v in G.edges() if u == v)
+
+
+   per_multi_links = (num_multi_links/num_edges)*100
+   per_self_loop = (num_self_loop/num_edges)*100
+
+
+   return per_multi_links, per_self_loop
+
+
+def print_results(N_values, gamma_values):
+   for gamma in gamma_values:
+       print(f"Results for γ = {gamma}:")
+
+
+       for N in N_values:
+           G, G_simple = generate_network(N, gamma)
+           perc_multi_links, perc_self_loops = calculate_percentage(G, G_simple)
+
+
+           print(f"Network Size (N): {N}")
+           print(f"  Percentage of Multi-links: {perc_multi_links:.2f}%")
+           print(f"  Percentage of Self-loops: {perc_self_loops:.2f}%\n")
+
+
+N_values = [10**3, 10**4, 10**5]
+gamma_values = [2.2, 3.0]
+print_results(N_values, gamma_values)
+
+
+
+
+Ba - deg distribution, cum degree, power law, avg clustering coff
+
+
+def generate_ba_network(N, m):
+   G = nx.complete_graph(m)
+   while G.number_of_nodes() < N:
+       G = nx.barabasi_albert_graph(G.number_of_nodes() + 1, m, initial_graph=G)
+   return G
+
+
+def measure_degree_distribution(G):
+   degrees = [d for n, d in G.degree()]
+   return Counter(degrees)
+
+
+def fit_power_law(x, y):
+   logx = np.log(x)
+   logy = np.log(y)
+   coeffs = np.polyfit(logx, logy, 1)
+   return -coeffs[0]
+
+
+def plot_degree_distribution(distributions, N_values):
+   plt.figure(figsize=(10, 6))
+   for N, dist in zip(N_values, distributions):
+       x = list(dist.keys())
+       y = [dist[k] / sum(dist.values()) for k in x]
+       plt.loglog(x, y, 'o-', label=f'N = {N}')
+
+
+       # Fit power-law
+       gamma = fit_power_law(x, y)
+       print(f"N = {N}, γ = {gamma:.2f}")
+
+
+   plt.xlabel('Degree (k)')
+   plt.ylabel('P(k)')
+   plt.legend()
+   plt.title('Degree Distribution at Different Network Sizes')
+   plt.show()
+
+
+def plot_cumulative_distribution(distributions, N_values):
+   plt.figure(figsize=(10, 6))
+   for N, dist in zip(N_values, distributions):
+       x = sorted(dist.keys())
+       y = [sum(dist[k] for k in dist if k >= degree) / sum(dist.values()) for degree in x]
+       plt.loglog(x, y, '-', label=f'N = {N}')
+
+
+   plt.xlabel('Degree (k)')
+   plt.ylabel('P(K ≥ k)')
+   plt.legend()
+   plt.title('Cumulative Degree Distribution')
+   plt.show()
+
+
+def measure_clustering_coefficient(N_values, m):
+   clustering_coeffs = []
+   for N in N_values:
+       G = generate_ba_network(N, m)
+       clustering_coeffs.append(nx.average_clustering(G))
+
+
+   plt.figure(figsize=(10, 6))
+   plt.loglog(N_values, clustering_coeffs, 'o-')
+   plt.xlabel('N')
+   plt.ylabel('Average Clustering Coefficient')
+   plt.title('Clustering Coefficient vs. Network Size')
+   plt.show()
+
+
+# Generate BA network and analyze
+N_values = [10**2, 10**3, 10**4]
+m = 4
+
+
+distributions = []
+for N in N_values:
+   G = generate_ba_network(N, m)
+   distributions.append(measure_degree_distribution(G))
+
+
+plot_degree_distribution(distributions, N_values)
+plot_cumulative_distribution(distributions, N_values)
+
+
+# Measure clustering coefficient
+N_values_clustering = np.logspace(2, 4, 10).astype(int)
+measure_clustering_coefficient(N_values_clustering, m)
+
+
+
+
+
+
+Hw1
+
+
+import math
+import numpy as np
+from scipy.optimize import fsolve
+
+
+def expected_links(N, p):
+   return p * N * (N - 1) / 2
+
+
+def critical_probability(N):
+   return math.log(N) / N
+
+
+def network_regime(N, p):
+   pc = critical_probability(N)
+   if p < pc:
+       return "Subcritical"
+   elif p > pc:
+       return "Supercritical"
+   else:
+       return "Critical"
+
+
+def solve_Ncr(p):
+   def equation(N):
+       return p - math.log(N) / N
+   return fsolve(equation, 1000)[0]
+
+
+def average_degree(N, p):
+   return p * (N - 1)
+
+
+def average_distance(N, k_avg):
+   return math.log(N) / math.log(k_avg)
+
+
+def degree_distribution(k, lambda_val):
+   return (math.exp(-lambda_val) * lambda_val**k) / math.factorial(k)
+
+
+# Given parameters
+N = 3000
+p = 1e-3
+
+
+# 1. Expected number of links
+L_avg = expected_links(N, p)
+print(f"1. Expected number of links: {L_avg:.2f}")
+print()
+
+
+# 2. Network regime
+regime = network_regime(N, p)
+print(f"2. Network regime: {regime}")
+print()
+
+
+# 3. Critical probability
+pc = critical_probability(N)
+print(f"3. Critical probability: {pc:.6f}")
+print()
+
+
+# 4. Number of nodes for one component
+N_cr = solve_Ncr(p)
+print(f"4. Number of nodes for one component: {N_cr:.2f}")
+print()
+
+
+# 5. Average degree and distance for the network in (d)
+k_cr_avg = average_degree(N_cr, p)
+d_avg = average_distance(N_cr, k_cr_avg)
+print(f"5. For the network in (d):")
+print(f"   \tAverage degree: {k_cr_avg:.2f}")
+print(f"   \tAverage distance: {d_avg:.2f}")
+print()
+
+
+# 6. Degree distribution
+lambda_val = average_degree(N, p)
+k_values = range(20)  # Calculate for k = 0 to 19
+pk_values = [degree_distribution(k, lambda_val) for k in k_values]
+
+
+print("6. Degree distribution:")
+for k, pk in zip(k_values, pk_values):
+   print(f"   P({k}) = {pk:.6f}")
+
+
+Hw2
+
+
+import numpy as np
+import networkx as nx
+
+
+def create_circular_network(N, m):
+   G = nx.Graph()
+   G.add_nodes_from(range(N))
+   for i in range(N):
+       for j in range(1, m + 1):
+           G.add_edge(i, (i + j) % N)
+           G.add_edge(i, (i - j) % N)
+   return G
+
+
+def average_clustering_coefficient(N, m):
+   # For this specific network structure, we can calculate directly
+   if m == 1:
+       return 0
+   return (3 * (m - 1)) / (2 * (2 * m - 1))
+
+
+def average_shortest_path(G):
+   return nx.average_shortest_path_length(G)
+
+
+def theoretical_average_shortest_path(N, m):
+   return N / (4 * m) + 1/2
+
+
+# Parameters
+N = 20
+m = 3
+
+
+# Create the network
+G = create_circular_network(N, m)
+
+
+# Calculate average clustering coefficient
+C_avg = average_clustering_coefficient(N, m)
+print(f"Average clustering coefficient: {C_avg:.4f}")
+
+
+# Calculate average shortest path
+d_avg = average_shortest_path(G)
+print(f"Average shortest path: {d_avg:.4f}")
+
+
+# Theoretical average shortest path
+d_avg_theo = theoretical_average_shortest_path(N, m)
+print(f"Theoretical average shortest path: {d_avg_theo:.4f}")
+
+
+# Calculate for large N
+N_large = 10000
+C_avg_large = average_clustering_coefficient(N_large, m)
+d_avg_large_theo = theoretical_average_shortest_path(N_large, m)
+
+
+print(f"\nFor N = {N_large}:")
+print(f"Average clustering coefficient: {C_avg_large:.4f}")
+print(f"Theoretical average shortest path: {d_avg_large_theo:.4f}")
+
+
+
+
+Hw3
+
+
+import numpy as np
+
+
+def power_law_calculations(N, gamma, k_min, k_max):
+   # Create degree array
+   k = np.arange(k_min, k_max + 1)
+
+
+   # Calculate pk
+   pk = k**(-gamma)
+   pk /= pk.sum()  # Normalize
+
+
+   # Calculate average degree
+   k_avg = np.sum(k * pk)
+
+
+   # Calculate average squared degree
+   k_squared_avg = np.sum(k**2 * pk)
+
+
+   # Calculate normalization factor A
+   A = k_avg / k_squared_avg
+
+
+   # Calculate average neighbor degree
+   k_nn_avg = k_squared_avg / k_avg
+
+
+   return k_avg, k_nn_avg, A
+
+
+# Parameters
+N = 10**4
+gamma = 2.3
+k_min = 1
+k_max = 1000
+
+
+k_avg, k_nn_avg, A = power_law_calculations(N, gamma, k_min, k_max)
+
+
+print(f"Average degree 〈k〉: {k_avg:.2f}")
+print(f"Average neighbor degree 〈knn〉: {k_nn_avg:.2f}")
+print(f"Normalization factor A: {A:.4f}")
